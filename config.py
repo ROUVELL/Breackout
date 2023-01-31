@@ -1,0 +1,4 @@
+
+# screen
+WIDTH, HEIGHT = 1300, 700
+SCREEN = (WIDTH, HEIGHT)
