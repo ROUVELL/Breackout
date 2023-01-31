@@ -1,21 +1,23 @@
 import pygame as pg
 
+from breakout import Breackout
 from config import *
 
 
 class Game:
+    """Клас в якому ініціалізуєить pygame, контролюється fps та запускається основний цикл"""
+
     def __init__(self):
         pg.init()
         self.sc = pg.display.set_mode(SCREEN, pg.NOFRAME)
         self.clock = pg.time.Clock()
+        self.breackout = Breackout(self)
 
     def run(self):
         while True:
             self.clock.tick(60)
-            [exit() for e in pg.event.get() if e.type == pg.KEYUP and e.key == pg.K_ESCAPE]
-            self.sc.fill((10, 10, 10))
-            # update
-            # draw
+            self.breackout.update()
+            self.breackout.draw()
             pg.display.flip()
 
 
