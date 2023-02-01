@@ -10,6 +10,9 @@ class Ball:
         self.color = 'red'
         self.direction = pg.Vector2(direction)
 
+    def change_speed(self, sx=0, sy=0):
+        self.direction += pg.Vector2(sx, sy)
+
     def update(self, direction: pg.Vector2):
         self.direction = direction
         self.rect.move_ip(self.direction)

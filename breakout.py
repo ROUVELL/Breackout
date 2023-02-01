@@ -9,12 +9,11 @@ from config import *
 
 
 class Breackout:
-    """Основний клас який керує всіма ігровими елементами"""
-
     def __init__(self, game):
         self.game = game
         self.sc = game.sc
         ########
+        self._fps_font = pg.font.SysFont('calibri', 26)
         self.start()
 
     def on_exit(self):
@@ -25,17 +24,19 @@ class Breackout:
         pg.time.wait(1000)  # 1 sec
         self.start()
 
-    def create_level(self, cols=MAX_COLUMNS, rows=MAX_ROWS):
+    def create_level(self, cols=MAX_COLUMNS, rows=MAX_ROWS, ox=5, oy=30, dx=5, dy=5):
         """Створення списка плиток по заданим параметрам к-сті стовпчиків і рядків"""
         # не виходимо за границю максьмальних значень ширини та висоти
+
+        # TODO: Розмір плитки має вичислятись в залежності від переданих аргументів
         cols = min(MAX_COLUMNS, cols)
         rows = min(MAX_ROWS, rows)
 
-        ox = WIDTH // cols
-        oy = (HEIGHT - 3 * BRICK_HIGHT) // rows
-        for y in range(int(1.5 * BRICK_HIGHT), BRICK_HIGHT * MAX_ROWS, oy):
-            for x in range(ox // 2, WIDTH, ox):
-                self.bricks.add(Brick((x, y), group=self.bricks))
+        colors = ['orange', 'lightgreen', 'lightgrey', 'azure', 'skyblue', 'pink', 'brown', 'yellow']
+
+        for y in range(oy + BRICK_HIGHT // 2, BRICK_HIGHT * rows, BRICK_HIGHT + dy):
+            for x in range(ox + BRICK_WIDTH // 2, BRICK_WIDTH * cols, BRICK_WIDTH + dx):
+                self.bricks.add(Brick((x, y), group=self.bricks, color=choice(colors)))
 
     def start(self):
         self.bricks = Group()
@@ -43,12 +44,17 @@ class Breackout:
         direct = (choice([-3, -2, -1, 1, 2, 3]), -3)
         self.ball = Ball(direct)
         ###########
-        self.create_level(cols=18, rows=16)
+        self.create_level()
 
     def check_events(self):
         for event in pg.event.get():
-            if event.type == pg.KEYUP and event.key == pg.K_ESCAPE:
-                self.on_exit()
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_ESCAPE:
+                    self.on_exit()
+                # elif event.key == pg.K_q:
+                #     self.ball.change_speed(sx=1)
+                # elif event.key == pg.K_e:
+                #     self.ball.change_speed(sy=1)
 
     def collide_ball_with_bricks(self):
         ball = self.ball
@@ -86,4 +92,6 @@ class Breackout:
         self.bricks.draw(self.sc)
         self.padle.draw(self.sc)
         self.ball.draw(self.sc)
+        self.sc.blit(self._fps_font.render(f'{self.game.clock.get_fps(): .1f}', True, 'grey'), (0, 0))
+        self.sc.blit(self._fps_font.render(f'Bricks: {len(self.bricks)}', True, 'grey'), (80, 0))
         pg.display.flip()

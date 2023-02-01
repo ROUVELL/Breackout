@@ -5,8 +5,6 @@ from config import *
 
 
 class Game:
-    """Клас в якому ініціалізуєить pygame, контролюється fps та запускається основний цикл"""
-
     def __init__(self):
         pg.init()
         self.sc = pg.display.set_mode(SCREEN, pg.NOFRAME)
