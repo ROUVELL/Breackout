@@ -5,6 +5,7 @@ from brick import Brick
 from padle import Padle
 from ball import Ball
 from group import Group
+from collision_system import CollisionSystem
 from config import *
 
 
@@ -48,8 +49,8 @@ class Breackout:
     def start(self):
         self.bricks = Group()
         self.padle = Padle()
-        direct = (choice([-3, -2, -1, 1, 2, 3]), -3)
-        self.ball = Ball(direct)
+        self.ball = Ball((choice([-3, -2, -1, 1, 2, 3]), -3))
+        self.collision_system = CollisionSystem(self.padle, self.ball, self.bricks)
         ###########
         self.create_level(brick_size=(100, 50), level_size=(16, 16))
 
@@ -63,36 +64,15 @@ class Breackout:
                 # elif event.key == pg.K_e:
                 #     self.ball.change_speed(sy=1)
 
-    def collide_ball_with_bricks(self):
-        ball = self.ball
-        colliders = [*self.bricks.copy(), self.padle]
-        direction = ball.direction
-        dx, dy = ball.direction
-
-        # check game over
-        if ball.rect.move(0, dy).top > HEIGHT:
-            self.on_game_over()
-
-        # vertical and horizontal collision
-        x_indexes = ball.rect.move(dx, 0).collidelistall(colliders)
-        y_indexes = ball.rect.move(0, dy).collidelistall(colliders)
-
-        if x_indexes:
-            direction.x = -direction.x
-        if y_indexes:
-            direction.y = -direction.y
-
-        # delete brick(s)
-        [colliders[i].kill() for i in {*x_indexes, *y_indexes}]
-
-        return direction
 
     def update(self):
         self.check_events()
         self.bricks.update()
         self.padle.update()
-        self.ball.update(direction=self.collide_ball_with_bricks())
-        self.collide_ball_with_bricks()
+        self.ball.update()
+        self.collision_system.ball_with_all()
+        if self.collision_system.ball_with_bottom():
+            self.start()
 
     def draw(self):
         self.sc.fill(BG)
