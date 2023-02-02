@@ -11,8 +11,8 @@ class Group:
     def copy(self):
         return self.items[:]
 
-    def add(self, item):
-        self.items.append(item)
+    def add(self, *items):
+        [self.items.append(item) for item in items]
 
     def remove(self, item):
         self.items.remove(item)
