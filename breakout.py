@@ -52,7 +52,7 @@ class Breackout:
 
     def start(self):
         self.bricks = Group()
-        self.balls = Group()
+        self.balls = Group()  # TODO: kill() по таймеру якщо в групі більше одного м'яча
         self.padle = Padle()
         self.collision_system = CollisionSystem(self.padle, self.balls, self.bricks)
         ###########
@@ -68,12 +68,11 @@ class Breackout:
                     pos = self.balls.copy()[-1].rect.center
                     self.balls.add(Ball(direction, pos, group=self.balls))
 
-    def update(self):
+    def update(self, dt: float):
         self.check_events()
-        self.bricks.update()
-        self.padle.update()
-        self.balls.update()
-        self.collision_system.balls_with_all()
+        self.padle.update(dt)
+        self.balls.update(dt)
+        self.collision_system.update(dt)
         if not len(self.balls):
             self.on_game_over()
         if not len(self.bricks):

@@ -13,8 +13,8 @@ class Game:
 
     def run(self):
         while True:
-            self.clock.tick(60)
-            self.breackout.update()
+            dt = float(f'{self.clock.tick(60) / 16.66 : .1f}')
+            self.breackout.update(dt)
             self.breackout.draw()
             pg.display.flip()
 

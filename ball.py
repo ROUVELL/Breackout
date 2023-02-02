@@ -1,10 +1,11 @@
 import pygame as pg
 
+from group import Group
 from config import *
 
 
 class Ball:
-    def __init__(self, direction, pos=BALL_START_POS, *, group):
+    def __init__(self, direction: tuple, pos: tuple = BALL_START_POS, *, group: Group):
         self.group = group
         ##########
         self.rect = pg.Rect((0, 0), (BALL_DIAMETR, BALL_DIAMETR))
@@ -19,8 +20,8 @@ class Ball:
         if x: self.direction.x = -self.direction.x
         if y: self.direction.y = -self.direction.y
 
-    def update(self):
-        self.rect.move_ip(self.direction)
+    def update(self, dt: float):
+        self.rect.move_ip(self.direction * dt)
 
     def draw(self, sc: pg.Surface):
         pg.draw.circle(sc, self.color, self.rect.center, BALL_DIAMETR // 2)
