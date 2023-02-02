@@ -4,7 +4,7 @@ from config import *
 
 
 class Brick:
-    def __init__(self, pos, size=BRICK_SIZE, color='orange', *, group):
+    def __init__(self, pos, size, color='orange', *, group):
         self.group = group
         self.rect = pg.Rect((0, 0), size)
         self.rect.center = pos
