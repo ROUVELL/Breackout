@@ -24,19 +24,26 @@ class Breackout:
         pg.time.wait(1000)  # 1 sec
         self.start()
 
-    def create_level(self, cols=MAX_COLUMNS, rows=MAX_ROWS, ox=5, oy=30, dx=5, dy=5):
-        """Створення списка плиток по заданим параметрам к-сті стовпчиків і рядків"""
-        # не виходимо за границю максьмальних значень ширини та висоти
+    def create_level(self, brick_size, level_size, ox=5, oy=30, dx=5, dy=5):
+        # TODO: Вичисляти розмір плитки від розміру левела якщо він не переданий і навпаки
 
-        # TODO: Розмір плитки має вичислятись в залежності від переданих аргументів
-        cols = min(MAX_COLUMNS, cols)
-        rows = min(MAX_ROWS, rows)
+        w, h = brick_size
+        cols, rows = level_size
 
-        colors = ['orange', 'lightgreen', 'lightgrey', 'azure', 'skyblue', 'pink', 'brown', 'yellow']
+        # Нам не потрібні лишні помилки
+        w = min(max(1, w), WIDTH)
+        h = min(max(1, h), HEIGHT)
 
-        for y in range(oy + BRICK_HIGHT // 2, BRICK_HIGHT * rows, BRICK_HIGHT + dy):
-            for x in range(ox + BRICK_WIDTH // 2, BRICK_WIDTH * cols, BRICK_WIDTH + dx):
-                self.bricks.add(Brick((x, y), group=self.bricks, color=choice(colors)))
+        start_y, end_y, step_y = oy + h // 2, h * rows, h + dy
+        start_x, end_x, step_x = ox + w // 2, w * cols, w + dx
+
+        self.bricks.add(*[Brick(pos=(x, y), size=(w, h), group=self.bricks, color=choice(BRICK_COLORS))
+                          for x in range(start_x, end_x, step_x)
+                          for y in range(start_y, end_y, step_y)])
+
+        # for y in range(start_y, end_y, step_y):
+        #     for x in range(start_x, end_x, step_x):
+        #         self.bricks.add(Brick(pos=(x, y), size=(w, h), group=self.bricks, color=choice(colors)))
 
     def start(self):
         self.bricks = Group()
@@ -44,7 +51,7 @@ class Breackout:
         direct = (choice([-3, -2, -1, 1, 2, 3]), -3)
         self.ball = Ball(direct)
         ###########
-        self.create_level()
+        self.create_level(brick_size=(100, 50), level_size=(16, 16))
 
     def check_events(self):
         for event in pg.event.get():
@@ -88,7 +95,7 @@ class Breackout:
         self.collide_ball_with_bricks()
 
     def draw(self):
-        self.sc.fill((10, 10, 10))
+        self.sc.fill(BG)
         self.bricks.draw(self.sc)
         self.padle.draw(self.sc)
         self.ball.draw(self.sc)
