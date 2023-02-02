@@ -14,7 +14,7 @@ PADLE_POS = (WIDTH // 2, HEIGHT - PADLE_HEIGHT - 5)
 
 # ball
 BALL_DIAMETR = 16
-BALL_START_POS = (WIDTH // 2, 50)
+BALL_START_POS = (WIDTH // 2, HEIGHT // 2)
 
 # colors
 BG = (10, 10, 10)
