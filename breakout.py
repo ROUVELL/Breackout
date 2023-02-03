@@ -6,28 +6,28 @@ from padle import Padle
 from ball import Ball
 from group import Group
 from drawing import Drawing
+from timer import Timer, TimerGroup
 from collision_system import CollisionSystem
 from config import *
 
 
 class Breackout:
     def __init__(self, clock: pg.time.Clock):
-        self.clock = clock
+        self.bricks = Group()
+        self.balls = Group()  # TODO: kill() по таймеру якщо в групі більше одного м'яча
+        self.padle = Padle()
+        ###########
+        self.timers = TimerGroup(restart_timer=Timer(3000, self.start))
+        self.drawer = Drawing(clock, self.padle, self.bricks, self.balls, self.timers)
+        self.collision_system = CollisionSystem(self.padle, self.balls, self.bricks)
+        ###########
         self.start()
 
-    def on_exit(self):
-        pg.quit()
-        exit()
+    @property
+    def is_win(self): return not bool(len(self.bricks))
 
-    def on_game_over(self):
-        # TODO: Текстове сповіщення
-        pg.time.wait(1000)
-        self.start()
-
-    def on_win(self):
-        # TODO: Текстове сповіщення
-        pg.time.wait(1000)
-        self.start()
+    @property
+    def is_loss(self): return not bool(len(self.balls))
 
     def create_level(self, brick_size, level_size, ox=5, oy=30, dx=5, dy=5):
         # TODO: Вичисляти розмір плитки від розміру левела якщо він не переданий і навпаки
@@ -47,35 +47,37 @@ class Breackout:
                           for y in range(start_y, end_y, step_y)])
 
         self.balls.add(Ball((choice([-3, -2, 2, 3]), choice([-2, -3])), group=self.balls))
+        self.padle.rect.center = PADLE_POS
 
     def start(self):
-        self.bricks = Group()
-        self.balls = Group()  # TODO: kill() по таймеру якщо в групі більше одного м'яча
-        self.padle = Padle()
-        self.drawer = Drawing(self.clock, self.padle, self.bricks, self.balls)
-        self.collision_system = CollisionSystem(self.padle, self.balls, self.bricks)
+        self.timers.deactivate('restart_timer')
         ###########
-        self.create_level(brick_size=(100, 50), level_size=(16, 16))
+        self.bricks.clear()
+        self.balls.clear()
+        ###########
+        self.create_level(brick_size=(100, 50), level_size=(6, 6))
 
     def check_events(self):
         for event in pg.event.get():
             if event.type == pg.KEYUP:
                 if event.key == pg.K_ESCAPE:
-                    self.on_exit()
+                    exit()
                 if event.key == pg.K_SPACE:
                     direction = (choice([-3, -2, 2, 3]), choice([-3, -2, 2, 3]))
                     pos = self.balls.copy()[-1].rect.center
                     self.balls.add(Ball(direction, pos, group=self.balls))
 
+    def check_game_over(self):
+        if self.balls.is_empty or self.bricks.is_empty:
+            self.timers.activate('restart_timer')
+
     def update(self, dt: float):
         self.check_events()
+        self.timers.update()
         self.padle.update(dt)
         self.balls.update(dt)
         self.collision_system.update(dt)
-        if not len(self.balls):
-            self.on_game_over()
-        if not len(self.bricks):
-            self.on_win()
+        self.check_game_over()
 
     def draw(self):
         self.drawer.all()
