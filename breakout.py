@@ -5,16 +5,14 @@ from brick import Brick
 from padle import Padle
 from ball import Ball
 from group import Group
+from drawing import Drawing
 from collision_system import CollisionSystem
 from config import *
 
 
 class Breackout:
-    def __init__(self, game):
-        self.game = game
-        self.sc = game.sc
-        ########
-        self._fps_font = pg.font.SysFont('calibri', 26)
+    def __init__(self, clock: pg.time.Clock):
+        self.clock = clock
         self.start()
 
     def on_exit(self):
@@ -54,6 +52,7 @@ class Breackout:
         self.bricks = Group()
         self.balls = Group()  # TODO: kill() по таймеру якщо в групі більше одного м'яча
         self.padle = Padle()
+        self.drawer = Drawing(self.clock, self.padle, self.bricks, self.balls)
         self.collision_system = CollisionSystem(self.padle, self.balls, self.bricks)
         ###########
         self.create_level(brick_size=(100, 50), level_size=(16, 16))
@@ -79,10 +78,4 @@ class Breackout:
             self.on_win()
 
     def draw(self):
-        self.sc.fill(BG)
-        self.bricks.draw(self.sc)
-        self.padle.draw(self.sc)
-        self.balls.draw(self.sc)
-        self.sc.blit(self._fps_font.render(f'{self.game.clock.get_fps(): .1f}', True, 'grey'), (0, 0))
-        self.sc.blit(self._fps_font.render(f'Bricks: {len(self.bricks)}', True, 'grey'), (80, 0))
-        pg.display.flip()
+        self.drawer.all()
