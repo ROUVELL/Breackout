@@ -9,7 +9,7 @@ class Game:
         pg.init()
         self.sc = pg.display.set_mode(SCREEN, pg.NOFRAME)
         self.clock = pg.time.Clock()
-        self.breackout = Breackout(self)
+        self.breackout = Breackout(self.clock)
 
     def run(self):
         while True:
