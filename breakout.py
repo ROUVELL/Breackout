@@ -18,16 +18,16 @@ class Breackout:
         self.padle = Padle()
         ###########
         self.timers = TimerGroup(restart_timer=Timer(3000, self.start))
-        self.drawer = Drawing(clock, self.padle, self.bricks, self.balls, self.timers)
+        self.drawer = Drawing(self, clock, self.padle, self.bricks, self.balls, self.timers)
         self.collision_system = CollisionSystem(self.padle, self.balls, self.bricks)
         ###########
         self.start()
 
     @property
-    def is_win(self): return not bool(len(self.bricks))
+    def is_win(self): return self.bricks.is_empty
 
     @property
-    def is_loss(self): return not bool(len(self.balls))
+    def is_loss(self): return self.balls.is_empty
 
     def create_level(self, brick_size, level_size, ox=5, oy=30, dx=5, dy=5):
         # TODO: Вичисляти розмір плитки від розміру левела якщо він не переданий і навпаки
@@ -68,7 +68,7 @@ class Breackout:
                     self.balls.add(Ball(direction, pos, group=self.balls))
 
     def check_game_over(self):
-        if self.balls.is_empty or self.bricks.is_empty:
+        if self.is_win or self.is_loss:
             self.timers.activate('restart_timer')
 
     def update(self, dt: float):
