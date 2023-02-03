@@ -4,7 +4,8 @@ user = ctypes.windll.user32
 
 # screen
 WIDTH, HEIGHT = user.GetSystemMetrics(78), user.GetSystemMetrics(79)  # fullscreen
-CENTER = (WIDTH // 2, HEIGHT // 2)
+HALF_WIDTH, HALF_HEIGHT = WIDTH // 2, HEIGHT // 2
+CENTER = (HALF_WIDTH, HALF_HEIGHT)
 SCREEN = (WIDTH, HEIGHT)
 
 # padle
