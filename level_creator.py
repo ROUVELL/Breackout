@@ -25,14 +25,11 @@ class LevelCreator:
         return (w - dx, h - dy)
 
     def new(self, brick_size=None, level_size=None, ox=5, oy=30, dx=5, dy=5):
-        # TODO: Вичисляти розмір плитки від розміру левела якщо він не переданий і навпаки
-
         assert (brick_size or level_size), 'Відсутній один із важливих параметрів'
 
         w, h = brick_size if brick_size else self._get_brick_size(level_size, ox, oy, dx, dy)
         cols, rows = level_size if level_size else self._get_level_size(brick_size, ox, oy, dx, dy)
 
-        print(cols, rows)
         end_x, step_x = ((w + dx) * cols) + ox, w + dx
         end_y, step_y = ((h + dy) * rows) + oy, h + dy
 
