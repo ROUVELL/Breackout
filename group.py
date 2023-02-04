@@ -11,6 +11,10 @@ class Group:
     @property
     def is_empty(self): return not len(self._items)
 
+    @property
+    def last(self):
+        if not self.is_empty: return self._items[-1]
+
     def clear(self):
         self._items.clear()
 
