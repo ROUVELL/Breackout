@@ -17,7 +17,7 @@ class Breackout:
         self.balls = Group()  # TODO: kill() по таймеру якщо в групі більше одного м'яча
         self.padle = Padle()
         ###########
-        self.timers = TimerGroup(restart_timer=Timer(3000, self.start))
+        self.timers = TimerGroup(restart_timer=Timer(6000, self.start))
         self.drawer = Drawing(self, clock, self.padle, self.bricks, self.balls, self.timers)
         self.collision_system = CollisionSystem(self.padle, self.balls, self.bricks)
         ###########
@@ -62,9 +62,9 @@ class Breackout:
             if event.type == pg.KEYUP:
                 if event.key == pg.K_ESCAPE:
                     exit()
-                if event.key == pg.K_SPACE:
+                if event.key == pg.K_SPACE and not self.balls.is_empty:
                     direction = (choice([-3, -2, 2, 3]), choice([-3, -2, 2, 3]))
-                    pos = self.balls.copy()[-1].rect.center
+                    pos = self.balls.last.rect.center
                     self.balls.add(Ball(direction, pos, group=self.balls))
 
     def check_game_over(self):
