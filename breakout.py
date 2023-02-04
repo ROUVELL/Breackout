@@ -20,8 +20,9 @@ class Breackout:
         self.timers = TimerGroup(restart_timer=Timer(6000, self.start))
         self.drawer = Drawing(self, clock, self.padle, self.bricks, self.balls, self.timers)
         self.level_creator = LevelCreator(self.bricks, self.balls)
-        self.collision_system = CollisionSystem(self.padle, self.balls, self.bricks)
+        self.collision_system = CollisionSystem(self, self.padle, self.balls, self.bricks)
         ###########
+        self.score = 0
         self.start()
 
     @property
@@ -30,23 +31,30 @@ class Breackout:
     @property
     def is_loss(self): return self.balls.is_empty
 
+    def add_score(self, value: int):
+        if not self.is_win:
+            self.score = max(self.score + value, 0)
+
     def start(self):
         self.timers.deactivate('restart_timer')
         ###########
         self.bricks.clear()
         self.balls.clear()
         ###########
-        self.level_creator.new(brick_size=(100, 50))
+        self.level_creator.new()
 
     def check_events(self):
         for event in pg.event.get():
             if event.type == pg.KEYUP:
                 if event.key == pg.K_ESCAPE:
                     exit()
-                if event.key == pg.K_SPACE and not self.balls.is_empty:
-                    self.level_creator.add_ball()
+                # if event.key == pg.K_SPACE and not self.balls.is_empty:
+            if pg.key.get_pressed()[pg.K_SPACE] and not self.balls.is_empty:
+                self.add_score(-3)
+                self.level_creator.add_ball()
 
     def check_game_over(self):
+        if self.timers.is_active('restart_timer'): return
         if self.is_win or self.is_loss:
             self.timers.activate('restart_timer')
 
