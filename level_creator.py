@@ -21,7 +21,7 @@ class LevelCreator:
 
     def _get_brick_size(self, level_size, ox, oy, dx, dy):
         cols, rows = level_size
-        w, h = (WIDTH - ox) // cols, (HEIGHT - oy) // rows
+        w, h = (WIDTH - ox) // cols, (HEIGHT - PADLE_HEIGHT - 20 - oy) // rows
         return (w - dx, h - dy)
 
     def new(self, brick_size=None, level_size=None, ox=5, oy=30, dx=5, dy=5):
