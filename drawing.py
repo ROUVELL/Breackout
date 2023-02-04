@@ -36,8 +36,11 @@ class Drawing:
             time = f"{self._timers.get_remaining_time('restart_timer') / 1000 : .2f}"
             self._text(f'Time to restart: {time}', (HALF_WIDTH, HALF_HEIGHT + 26), self._font, centralize=True)
 
+    def _score(self):
+        self._text(f'Score: {self._breakout.score}', (80, 0), self._font)
+
     def _bricks_count(self):
-        self._text(f'Bricks: {len(self._bricks)}', (80, 0), self._font)
+        self._text(f'Bricks: {len(self._bricks)}', (200, 0), self._font)
 
     def _fps(self):
         fps = f'{self._clock.get_fps(): .1f}'
@@ -49,6 +52,7 @@ class Drawing:
         self._padle.draw(self._sc)
         self._balls.draw(self._sc)
         self._time_to_restart()
-        self._bricks_count()
+        self._score()
+        # self._bricks_count()
         self._fps()
         pg.display.flip()
