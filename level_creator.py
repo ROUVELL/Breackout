@@ -13,10 +13,11 @@ class LevelCreator:
         self._balls = balls
 
     def new(self, *positions):
-        def get_pos(ix, iy):
+        def get_pos(ix, iy):  # з двох індексів отримуємо (х,у), по-моєму тупа реалізація
             x, y = (ix * (BRICK_WIDTH + DX)) + SIDE_OFFSET, (iy * (BRICK_HEIGHT + DY)) + YOFFSET
             return x, y
 
+        # якщо нічого не передали - заповнюємо левел повністью
         if not positions:
             positions = [(i, j) for i in range(MAX_COLS) for j in range(MAX_ROWS)]
 
