@@ -7,7 +7,8 @@ from config import WIDTH, HEIGHT
 
 
 class CollisionSystem:
-    def __init__(self, padle: Padle, balls: Group, bricks: Group):
+    def __init__(self, breackout, padle: Padle, balls: Group, bricks: Group):
+        self.breckout = breackout
         self.padle = padle
         self.balls = balls
         self.bricks = bricks
@@ -17,14 +18,13 @@ class CollisionSystem:
         self.padle.rect.right = min(WIDTH, self.padle.rect.right)
 
     def _ball_with_bricks(self, ball: Ball, dt: float) -> pg.Vector2:
-        # TODO: Рухати м'яч попіксельно бо при малому fps появляються баги
-        colliders = self.bricks.copy()
+        bricks = self.bricks.copy()
 
         dx, dy = ball.direction
 
         # vertical and horizontal collision
-        x_indexes = ball.rect.move(dx * dt, 0).collidelistall(colliders)
-        y_indexes = ball.rect.move(0, dy * dt).collidelistall(colliders)
+        x_indexes = ball.rect.move(dx * dt, 0).collidelistall(bricks)
+        y_indexes = ball.rect.move(0, dy * dt).collidelistall(bricks)
 
         if x_indexes:
             ball.change_direction(x=True)
@@ -32,7 +32,7 @@ class CollisionSystem:
             ball.change_direction(y=True)
 
         # delete brick(s)
-        [colliders[i].kill() for i in {*x_indexes, *y_indexes}]
+        [self.breckout.add_score(bricks[i].kill()) for i in {*x_indexes, *y_indexes}]
 
     def _ball_with_padle(self, ball: Ball, dt: float):
         # TODO: Зміна напряму м'яча в залежності від дистанції до центру дошки
@@ -51,6 +51,7 @@ class CollisionSystem:
         if ball.rect.left < 0 or ball.rect.right > WIDTH:
             ball.change_direction(x=True)
         if ball.rect.top > HEIGHT:
+            self.breckout.add_score(-1)
             ball.kill()
 
     def update(self, dt: float):
