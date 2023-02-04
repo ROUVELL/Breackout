@@ -8,8 +8,7 @@ class Brick:
     def __init__(self, pos: tuple, size: tuple, color: str, *, group: Group):
         self.group = group
         #########
-        self.rect = pg.Rect((0, 0), size)
-        self.rect.center = pos
+        self.rect = pg.Rect(pos, size)
         self.color = color
 
     def kill(self):
