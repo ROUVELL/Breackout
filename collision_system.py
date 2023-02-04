@@ -17,7 +17,7 @@ class CollisionSystem:
         self.padle.rect.right = min(WIDTH, self.padle.rect.right)
 
     def _ball_with_bricks(self, ball: Ball, dt: float) -> pg.Vector2:
-        # TODO: Рухати м'яч попіксельно та бо при малому fps появляються баги
+        # TODO: Рухати м'яч попіксельно бо при малому fps появляються баги
         colliders = self.bricks.copy()
 
         dx, dy = ball.direction
