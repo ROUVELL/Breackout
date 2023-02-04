@@ -8,55 +8,56 @@ from config import WIDTH, HEIGHT
 
 class CollisionSystem:
     def __init__(self, breackout, padle: Padle, balls: Group, bricks: Group):
-        self.breckout = breackout
-        self.padle = padle
-        self.balls = balls
-        self.bricks = bricks
+        self._breckout = breackout
+        self._padle = padle
+        self._balls = balls
+        self._bricks = bricks
 
     def _padle_with_screen(self):
-        self.padle.rect.left = max(0, self.padle.rect.left)
-        self.padle.rect.right = min(WIDTH, self.padle.rect.right)
+        # Не даємо дошці вийти за межі екрана
+        self._padle.rect.left = max(0, self._padle.rect.left)
+        self._padle.rect.right = min(WIDTH, self._padle.rect.right)
 
     def _ball_with_bricks(self, ball: Ball, dt: float) -> pg.Vector2:
-        bricks = self.bricks.copy()
+        bricks = self._bricks.copy()
 
-        dx, dy = ball.direction
+        dx, dy = ball.direction * dt
 
-        # vertical and horizontal collision
-        x_indexes = ball.rect.move(dx * dt, 0).collidelistall(bricks)
-        y_indexes = ball.rect.move(0, dy * dt).collidelistall(bricks)
+        # отримуємо індекси плиток з якими зіткнувся м'яч
+        x_indexes = ball.rect.move(dx, 0).collidelistall(bricks)
+        y_indexes = ball.rect.move(0, dy).collidelistall(bricks)
 
-        if x_indexes:
-            ball.change_direction(x=True)
-        if y_indexes:
-            ball.change_direction(y=True)
+        # міняємо напрям в залежності від зіткнення
+        if x_indexes: ball.change_direction(x=True)
+        if y_indexes: ball.change_direction(y=True)
 
-        # delete brick(s)
-        [self.breckout.add_score(bricks[i].kill()) for i in {*x_indexes, *y_indexes}]
+        # TODO: Деякі плитки можуть мати "здоровя" і видалятися не зразу
+        # видаляємо плитки з якими зіткнулися
+        [self._breckout.add_score(bricks[i].kill()) for i in {*x_indexes, *y_indexes}]
 
     def _ball_with_padle(self, ball: Ball, dt: float):
         # TODO: Зміна напряму м'яча в залежності від дистанції до центру дошки
 
-        is_collide = lambda dx, dy: ball.rect.move(dx * dt, dy * dt).colliderect(self.padle)
+        # true якщо є зіткнення, інакше false
+        is_collide = lambda dx, dy: ball.rect.move(dx, dy).colliderect(self._padle)
 
-        dx, dy = ball.direction
-        if is_collide(dx, 0):
-            ball.change_direction(x=True)
-        if is_collide(0, dy):
-            ball.change_direction(y=True)
+        dx, dy = ball.direction * dt
+        if is_collide(dx, 0): ball.change_direction(x=True)
+        if is_collide(0, dy): ball.change_direction(y=True)
 
     def _ball_with_screen(self, ball: Ball):
-        if ball.rect.top < 0:
+        rect = ball.rect
+        if rect.top < 0:
             ball.change_direction(y=True)
-        if ball.rect.left < 0 or ball.rect.right > WIDTH:
+        if rect.left < 0 or rect.right > WIDTH:
             ball.change_direction(x=True)
-        if ball.rect.top > HEIGHT:
-            self.breckout.add_score(-1)
+        if rect.top > HEIGHT:
+            self._breckout.add_score(-1)
             ball.kill()
 
     def update(self, dt: float):
         self._padle_with_screen()
-        for ball in self.balls.copy():
+        for ball in self._balls.copy():
             self._ball_with_bricks(ball, dt)
             self._ball_with_padle(ball, dt)
             self._ball_with_screen(ball)
